@@ -1,0 +1,10 @@
+- guess the note of the major scale at particular position - from 1 to 13
+- play major scale from specific starting position
+- playing major scale in octaves in cirthe of 4ths
+- guess the chord, including inversions + timer
+- play particular chord - minor, major, dominant, half-diminished, augmented, sus4, whole diminished, 6th, m6 (all from GetRealChecklist)
+- play chords in the circle of 4ths
+- play/guess chord progression chords - 1-4-5, 1-5-6-4, 2-5-1, 6-2-5-1, (6)-2-5-1-4-4m
+- danthecomposer challenge
+
+keep velocity in mind - shouldn't be very different
