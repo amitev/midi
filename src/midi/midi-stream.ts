@@ -1,34 +1,74 @@
-import {Note} from '../model/note';
+import { Note } from '../model/note';
 
-type Observer = ((value: string) => void);
+type Observer = ((event: MidiEvent) => void);
 
 const observers: Observer[] = [];
 
-export enum MidiCodes {
+enum MidiCodes {
   NOTE_ON = 144,
   NOTE_OFF = 128,
   ACTIVE_SENSING = 254,
   CONTINUOUS_CONTROLLER = 176
 }
 
-function toNote(midiMessage: number[]): Note {
-  return new Note(midiMessage[1] % 12, Math.floor(midiMessage[1] / 12));
+export enum MidiEventType {
+  NOTE_ON = 'on',
+  NOTE_OFF = 'off',
+  UPDATE = 'update',
 }
 
-function midiMessage(message: any) {
-  let data = message.data[0] as number;
-  if (data == MidiCodes.NOTE_ON) {
-    console.log('note on', toNote(message.data).getName());
+export interface MidiEvent {
+  type: MidiEventType,
+  notes: Note[]
+}
 
-    observers.forEach((fn: Observer) => fn(message.data.toString()));
+function toNote(midiMessage: number[]): Note {
+  return new Note(midiMessage[1] % 12, Math.floor(midiMessage[1] / 12), midiMessage[2]);
+}
+
+let buffer: Array<Note> = [];
+
+export function reset() {
+  buffer = [];
+}
+
+export function handleMidiMessage(message: any) {
+  let midiCommand = message.data[0] as number;
+  if (midiCommand == MidiCodes.NOTE_ON) {
+    let note = toNote(message.data);
+
+    buffer.push(note);
+    buffer.sort((note1, note2) => note1.compareTo(note2));
+
+    if (buffer.length === 1) {
+      observers.forEach((fn: Observer) => fn({
+        type: MidiEventType.NOTE_ON,
+        notes: [note]
+      }));
+    } else {
+      observers.forEach((fn: Observer) => fn({
+        type: MidiEventType.UPDATE,
+        notes: [...buffer]
+      }));
+    }
   }
 
-  if (data == MidiCodes.NOTE_OFF) {
-    console.log('note off', toNote(message.data).getName());
+  if (midiCommand == MidiCodes.NOTE_OFF) {
+    let note = toNote(message.data);
 
-    // TODO send velocity
+    buffer = buffer.filter((current) => current.getFullName() !== note.getFullName());
 
-    observers.forEach((fn: Observer) => fn(message.data.toString()));
+    if (buffer.length === 0) {
+      observers.forEach((fn: Observer) => fn({
+        type: MidiEventType.NOTE_OFF,
+        notes: [note]
+      }));
+    } else {
+      observers.forEach((fn: Observer) => fn({
+        type: MidiEventType.UPDATE,
+        notes: [...buffer]
+      }));
+    }
   }
 }
 
@@ -39,7 +79,7 @@ _navigator.requestMIDIAccess()
 
     access.inputs.forEach((input: any) => {
       console.log(input.name);
-      input.onmidimessage = midiMessage;
+      input.onmidimessage = handleMidiMessage;
     });
 
     access.onstatechange = (event: any) => {
@@ -48,7 +88,7 @@ _navigator.requestMIDIAccess()
     };
   });
 
-function subscribe(callback: (value: string) => any) {
+function subscribe(callback: (event: MidiEvent) => any) {
   observers.push(callback);
 }
 

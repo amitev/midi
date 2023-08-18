@@ -13,7 +13,7 @@ import { Note } from "../../src/model/note";
 
 describe('Expression', () => {
 
-  describe.only('single note', () => {
+  describe('single note', () => {
     it('should support a single note', () => {
       let expression = new Expression('C');
       let sequence = [Note.fromName('C1')];
@@ -27,8 +27,14 @@ describe('Expression', () => {
     });
 
     it('should throw an error if the note is not recognized', () => {
+      let buffer = [Note.fromName('C1'), Note.fromName('D1')];
+
+      buffer.sort((note1, note2) => note1.compareTo(note2));
+      console.log(buffer);
+
       expect(() => new Expression('Z')).to.throw('Unrecognized note');
     });
+  
   });
 
 

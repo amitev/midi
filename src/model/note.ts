@@ -2,6 +2,7 @@
 const NOTE_PATTERN = /([A-G]{1}[b#]?)(\d{1,2})/;
 
 export class Note {
+  
   constructor(public value: number, public octave: number, public velocity?: number) { }
 
   getName(): string {
@@ -36,6 +37,10 @@ export class Note {
       case 10: return 'Bb' + this.octave;
       case 11: return 'B' + this.octave;
     }
+  }
+
+  compareTo(note: Note) {
+    return ((this.octave * 12) + this.value) - ((note.octave * 12) + note.value);
   }
 
   matches(value: string): boolean {
