@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "set TS_NODE_COMPILER_OPTIONS={\"module\": \"commonjs\"} && mocha -r ts-node/register test/**/*.ts",
-    "test2": "set TS_NODE_COMPILER_OPTIONS={\"module\": \"commonjs\"} && mocha ---watch-extensions ts --watch --watch-files src,test -r ts-node/register test/**/*.ts",
+    "dev": "set TS_NODE_COMPILER_OPTIONS={\"module\": \"commonjs\"} && mocha ---watch-extensions ts --watch --watch-files src,test -r ts-node/register test/**/*.ts",
     "start": "webpack-dev-server",
     "build:dev": "webpack --mode development",
     "build": "webpack --mode production  && cp src/index.html dist/index.html"

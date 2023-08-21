@@ -6,7 +6,6 @@ interface ExpressionElement {
   matches(sequence: Note[]): boolean;
 }
 
-
 class ExpressionNote implements ExpressionElement {
 
   private static NOTE_EXPRESSION_PATTERN = /[A-G]{1}/;
@@ -29,7 +28,7 @@ class ExpressionNote implements ExpressionElement {
 
   matches(sequence: Note[]): boolean {
     // TODO note-a sega ima chislo, trqbva toi da moje da proveri value da ima takava funkciq)
-    return sequence[0].matches(this.value);
+    return sequence.length === 1 && sequence[0].matches(this.value);
   }
 }
 
@@ -59,15 +58,26 @@ export class Expression {
   }
 
   public matches(sequence: Note[]): boolean {
-    // iterate nqkak si i match i da izqjda veche validiranite
-    return this.elemenents[0].matches(sequence);
+    let allMatch = false;
+    let sequenceCursor = 0;
+    for (let current of this.elemenents) {
+      // todo inner loop until we have a next match
+      let currentSequence: Note[] = []
+      // TODO expression za krai na sequence-a za da nqma Invalid array length
+      while (!current.matches(currentSequence) && sequenceCursor < sequence.length) {
+        currentSequence.push(sequence[sequenceCursor]);
+        sequenceCursor++;
+      }
+
+      allMatch = current.matches(currentSequence);
+    }
+
+    return allMatch;
   }
 
 
 }
 
-// model for expression
-// ne6to kato regex
 // add note including time being pressed
-// on fehler event
+// on error event
 // on success event

@@ -1,14 +1,11 @@
 (global as any).navigator = {};
 (navigator as any).requestMIDIAccess = async () => {};
 
-
-
-
 import { expect } from 'chai';
 import subscribe, { handleMidiMessage, MidiEvent, MidiEventType, reset } from '../../src/midi/midi-stream';
 import { Note } from '../../src/model/note';
 
-describe.only('midi-stream', () => {
+describe('midi-stream', () => {
 
   let buffer: Array<MidiEvent> = [];
   let observer: (event: MidiEvent) => any = (event) => buffer.push(event);
